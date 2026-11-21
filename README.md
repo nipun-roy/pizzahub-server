@@ -104,8 +104,12 @@ Implemented in `src/controllers/subscription.controller.ts`:
    # Fill in your MONGODB_URI and Stripe keys
    ```
 
-4. **Seed the initial Admin account**:
+4. **Seed database data**:
    ```bash
+   # Seed complete sample data (Admin, Vendors, Customers, 20 Menu Items, Orders, Transactions)
+   npm run seed
+
+   # Or seed only the initial Admin account:
    npm run seed:admin
    ```
 
