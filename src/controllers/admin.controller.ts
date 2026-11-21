@@ -75,7 +75,7 @@ export async function getUsers(req: Request, res: Response): Promise<void> {
 // Admin: Block / Unblock user
 export async function toggleBlockUser(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const adminId = req.user!.id;
 
     if (!ObjectId.isValid(id)) {
@@ -151,7 +151,7 @@ export async function getAdminMenuItems(req: Request, res: Response): Promise<vo
 // Admin: Approve or Reject Menu Item
 export async function updateMenuItemStatus(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { status } = req.body as { status: MenuItemStatus };
 
     if (!ObjectId.isValid(id)) {
@@ -188,7 +188,7 @@ export async function updateMenuItemStatus(req: Request, res: Response): Promise
 // Admin: Delete inappropriate menu item
 export async function deleteMenuItemAdmin(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
 
     if (!ObjectId.isValid(id)) {
       res.status(400).json({ success: false, message: 'Invalid item ID' });

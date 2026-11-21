@@ -95,7 +95,7 @@ export async function getFeaturedMenuItems(req: Request, res: Response): Promise
 // Public: Get Single Item Details
 export async function getMenuItemById(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     if (!ObjectId.isValid(id)) {
       res.status(400).json({ success: false, message: 'Invalid item ID format' });
       return;
@@ -212,7 +212,7 @@ export async function getVendorMenuItems(req: Request, res: Response): Promise<v
 // Vendor: Update My Menu Item
 export async function updateMenuItem(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const vendorId = new ObjectId(req.user!.id);
 
     if (!ObjectId.isValid(id)) {
@@ -257,7 +257,7 @@ export async function updateMenuItem(req: Request, res: Response): Promise<void>
 // Vendor: Delete My Menu Item
 export async function deleteMenuItem(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const vendorId = new ObjectId(req.user!.id);
 
     if (!ObjectId.isValid(id)) {

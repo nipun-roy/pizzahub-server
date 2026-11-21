@@ -119,7 +119,7 @@ export async function getCustomerOrders(req: Request, res: Response): Promise<vo
 // Customer: Cancel pending order
 export async function cancelCustomerOrder(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const customerId = new ObjectId(req.user!.id);
 
     if (!ObjectId.isValid(id)) {
@@ -189,7 +189,7 @@ export async function getVendorOrders(req: Request, res: Response): Promise<void
 // Vendor: Update Order Status (Accept or Reject)
 export async function updateOrderStatus(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params;
+    const id = req.params.id as string;
     const { status } = req.body as { status: OrderStatus };
     const vendorId = new ObjectId(req.user!.id);
 
