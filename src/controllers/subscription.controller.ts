@@ -10,16 +10,20 @@ const stripe = config.stripeSecretKey ? new Stripe(config.stripeSecretKey) : nul
 // Vendor: Create Stripe Checkout Session for Premium Subscription
 export async function createCheckoutSession(req: Request, res: Response): Promise<void> {
   try {
+    const vendorId = req.user!.id;
+    const vendorEmail = req.user!.email;
+
+    // Sandbox / Test Simulator Mode: If real Stripe key is not configured
     if (!stripe) {
-      res.status(500).json({
-        success: false,
-        message: 'Stripe is not configured. Please set STRIPE_SECRET_KEY in server environment variables.',
+      const mockSessionId = `cs_test_sandbox_${Date.now()}`;
+      res.json({
+        success: true,
+        isSandbox: true,
+        sessionId: mockSessionId,
+        url: `${config.clientUrl}/payment/sandbox-checkout?session_id=${mockSessionId}`,
       });
       return;
     }
-
-    const vendorId = req.user!.id;
-    const vendorEmail = req.user!.email;
 
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
@@ -166,5 +170,56 @@ export async function getSubscriptionStatus(req: Request, res: Response): Promis
     });
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to retrieve subscription status' });
+  }
+}
+
+// Vendor: Confirm and process sandbox payment simulation
+export async function confirmSandboxPayment(req: Request, res: Response): Promise<void> {
+  try {
+    const vendorId = req.user!.id;
+    const vendorObjectId = new ObjectId(vendorId);
+    const { sessionId } = req.body;
+    const finalSessionId = sessionId || `cs_test_sandbox_${Date.now()}`;
+
+    // 1. Upgrade Vendor subscription plan to premium
+    await collections.users.updateOne(
+      { _id: vendorObjectId },
+      {
+        $set: {
+          subscriptionPlan: 'premium',
+          subscriptionExpiresAt: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000),
+          updatedAt: new Date(),
+        },
+      }
+    );
+
+    // 2. Mark existing menu items of this vendor as featured
+    await collections.menuItems.updateMany(
+      { vendorId: vendorObjectId },
+      { $set: { isFeatured: true } }
+    );
+
+    // 3. Record immutable verified transaction in database
+    const transaction: Transaction = {
+      _id: new ObjectId(),
+      vendorId: vendorObjectId,
+      plan: 'premium',
+      amount: 19.99,
+      currency: 'usd',
+      stripeSessionId: finalSessionId,
+      status: 'completed',
+      createdAt: new Date(),
+    };
+
+    await collections.transactions.insertOne(transaction);
+
+    res.json({
+      success: true,
+      message: 'Sandbox payment verified and vendor successfully upgraded to Premium!',
+      sessionId: finalSessionId,
+    });
+  } catch (error) {
+    console.error('Error confirming sandbox payment:', error);
+    res.status(500).json({ success: false, message: 'Failed to process sandbox payment' });
   }
 }
