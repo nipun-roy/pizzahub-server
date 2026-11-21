@@ -5,14 +5,15 @@ import path from 'path';
 // Load .env
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 
-const uri = process.env.MONGODB_URI;
-if (!uri) {
-  console.error('❌ MONGODB_URI environment variable is not defined in .env');
-  process.exit(1);
-}
-const dbName = process.env.DB_NAME || 'pizzahub';
-
 export async function seedAll() {
+  const uri = process.env.MONGODB_URI;
+  if (!uri) {
+    console.error('❌ MONGODB_URI environment variable is not defined in .env');
+    process.exit(1);
+    return;
+  }
+  const dbName = process.env.DB_NAME || 'pizzahub';
+
   console.log('Connecting to MongoDB Atlas...');
   const client = new MongoClient(uri);
   await client.connect();
