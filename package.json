@@ -25,5 +25,17 @@
     "@types/node": "^22.13.4",
     "ts-node-dev": "^2.0.0",
     "typescript": "^5.7.3"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nipun-roy/pizzahub-server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/nipun-roy/pizzahub-server/issues"
+  },
+  "homepage": "https://github.com/nipun-roy/pizzahub-server#readme"
 }
