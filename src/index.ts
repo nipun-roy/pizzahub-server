@@ -34,6 +34,11 @@ app.post(
   express.raw({ type: 'application/json' }),
   handleStripeWebhook
 );
+app.post(
+  '/api/subscriptions/webhook',
+  express.raw({ type: 'application/json' }),
+  handleStripeWebhook
+);
 
 // 3. Body Parsers for standard JSON payloads
 app.use(express.json());
