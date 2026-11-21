@@ -152,25 +152,41 @@ export async function signIn(req: Request, res: Response): Promise<void> {
 // Google OAuth Sync / Exchange
 export async function googleAuthSync(req: Request, res: Response): Promise<void> {
   try {
-    const { email, name, image, role = 'customer' } = req.body;
+    let { email, name, image, role = 'customer', credential } = req.body;
 
-    if (!email || !name) {
-      res.status(400).json({ success: false, message: 'Email and name are required' });
+    // If Google ID token credential is provided, decode payload
+    if (credential && typeof credential === 'string') {
+      try {
+        const parts = credential.split('.');
+        if (parts.length === 3) {
+          const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
+          email = payload.email || email;
+          name = payload.name || name;
+          image = payload.picture || image;
+        }
+      } catch (decodeErr) {
+        console.warn('Failed to decode Google credential token:', decodeErr);
+      }
+    }
+
+    if (!email) {
+      res.status(400).json({ success: false, message: 'Google account email is required' });
       return;
     }
 
+    const finalName = name || email.split('@')[0];
     const normalizedEmail = email.toLowerCase().trim();
     let user = await collections.users.findOne({ email: normalizedEmail });
 
     if (!user) {
       const newUser: User = {
         _id: new ObjectId(),
-        name: name.trim(),
+        name: finalName.trim(),
         email: normalizedEmail,
         image: image || '',
         role: role === 'vendor' ? 'vendor' : 'customer',
         isBlocked: false,
-        businessName: role === 'vendor' ? `${name.trim()}'s Pizzeria` : undefined,
+        businessName: role === 'vendor' ? `${finalName.trim()}'s Pizzeria` : undefined,
         subscriptionPlan: 'free',
         createdAt: new Date(),
         updatedAt: new Date(),
