@@ -44,6 +44,17 @@ app.post(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Ensure DB is connected for serverless environments (e.g. Vercel)
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('[Database Middleware Error]:', error);
+    res.status(500).json({ success: false, message: 'Database connection failed' });
+  }
+});
+
 // 4. Health Check / Root
 app.get('/', (req: Request, res: Response) => {
   res.json({
