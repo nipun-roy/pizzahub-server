@@ -154,12 +154,19 @@ export async function googleAuthSync(req: Request, res: Response): Promise<void>
   try {
     let { email, name, image, role = 'customer', credential } = req.body;
 
-    // If Google ID token credential is provided, decode payload
+    // If Google ID token credential is provided, decode payload safely
     if (credential && typeof credential === 'string') {
       try {
         const parts = credential.split('.');
         if (parts.length === 3) {
-          const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString('utf-8'));
+          let payloadStr = '';
+          try {
+            payloadStr = Buffer.from(parts[1], 'base64url').toString('utf-8');
+          } catch {
+            const b64 = parts[1].replace(/-/g, '+').replace(/_/g, '/');
+            payloadStr = Buffer.from(b64, 'base64').toString('utf-8');
+          }
+          const payload = JSON.parse(payloadStr);
           email = payload.email || email;
           name = payload.name || name;
           image = payload.picture || image;
