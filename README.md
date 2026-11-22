@@ -3,8 +3,8 @@
 Role-Based Backend API for the PizzaHub Pizza Ordering & Delivery Platform.
 
 ## 🚀 Live Site & Repositories
-- **Live Server URL**: `https://pizzahub-server.onrender.com` (or deployment URL)
-- **Live Client Application**: `https://pizzahub-client.vercel.app` (or deployment URL)
+- **Live Server URL**: [https://pizzahub-server-psi.vercel.app](https://pizzahub-server-psi.vercel.app)
+- **Live Client Application**: [https://pizzahub-hazel.vercel.app](https://pizzahub-hazel.vercel.app)
 - **Client GitHub Repository**: [https://github.com/nipun-roy/pizzahub-client](https://github.com/nipun-roy/pizzahub-client)
 - **Server GitHub Repository**: [https://github.com/nipun-roy/pizzahub-server](https://github.com/nipun-roy/pizzahub-server)
 
