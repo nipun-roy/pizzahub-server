@@ -201,6 +201,12 @@ export async function googleAuthSync(req: Request, res: Response): Promise<void>
 
       await collections.users.insertOne(newUser);
       user = newUser;
+    } else if (image && (!user.image || user.image.includes('dicebear') || user.image.includes('default'))) {
+      await collections.users.updateOne(
+        { _id: user._id },
+        { $set: { image, updatedAt: new Date() } }
+      );
+      user.image = image;
     }
 
     if (user.isBlocked) {
